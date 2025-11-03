@@ -35,14 +35,14 @@
 
         #dialogue {
             position: absolute;
-            top: 70px; /* ALTERADO: Movido mais para baixo */
+            top: 70px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             padding: 20px 30px;
             border-radius: 15px;
-            font-size: 22px; /* ALTERADO: Texto maior */
+            font-size: 22px;
             width: 80%;
             max-width: 600px;
             text-align: center;
@@ -64,7 +64,7 @@
             opacity: 0;
             background: rgba(10, 10, 10, 0.9);
             color: #ffb700;
-            font-size: 19px; /* ALTERADO: Texto maior */
+            font-size: 19px;
             text-align: left;
             text-shadow: 0 0 10px #ff6b00;
             transition: transform 1s ease-out, opacity 1s ease-out;
@@ -111,13 +111,13 @@
         /* Media queries para dispositivos móveis */
         @media (max-width: 768px) {
             #dialogue {
-                font-size: 18px; /* ALTERADO: Texto maior no mobile */
+                font-size: 18px;
                 padding: 15px 20px;
-                top: 80px; /* ALTERADO: Movido mais para baixo no mobile */
+                top: 80px;
             }
 
             #finalText {
-                font-size: 17px; /* ALTERADO: Texto maior no mobile */
+                font-size: 17px;
                 padding: 20px;
             }
 
@@ -150,7 +150,7 @@
             
             const scaleX = window.innerWidth / originalWidth;
             const scaleY = window.innerHeight / originalHeight;
-            scaleFactor = Math.min(scaleX, scaleY) * 0.98; /* ALTERADO: Usa um pouco mais da tela */
+            scaleFactor = Math.min(scaleX, scaleY) * 0.98;
 
             canvas.width = originalWidth * scaleFactor;
             canvas.height = originalHeight * scaleFactor;
@@ -174,11 +174,11 @@
                 this.x = canvas.width / 2;
                 this.y = canvas.height / 2;
                 this.scale = 1 * scaleFactor;
-                /* ALTERADO: Aumentei os valores base para o personagem ser maior */
-                this.headSize = 50 * scaleFactor;
-                this.bodyLength = 75 * scaleFactor;
-                this.armLength = 50 * scaleFactor;
-                this.legLength = 60 * scaleFactor;
+                /* ALTERADO: Aumentei drasticamente os valores base para o personagem ser bem maior */
+                this.headSize = 80 * scaleFactor;
+                this.bodyLength = 120 * scaleFactor;
+                this.armLength = 80 * scaleFactor;
+                this.legLength = 100 * scaleFactor;
                 this.shake = 0;
                 this.rotation = 0;
                 this.glow = 0;
@@ -345,7 +345,9 @@
             }, duration);
         }
 
-        function createExplosion() { for (let i = 0; i < 30; i++) { pumpkins.push(new Pumpkin(stickman.x, stickman.y - 60 * scaleFactor)); } }
+        /* ALTERADO: Posição da explosão ajustada para o novo tamanho do boneco */
+        function createExplosion() { for (let i = 0; i < 30; i++) { pumpkins.push(new Pumpkin(stickman.x, stickman.y - 100 * scaleFactor)); } }
+        
         function createHeart() {
             heartPumpkins = []; const heartPoints = [];
             const heartScale = 12 * scaleFactor;

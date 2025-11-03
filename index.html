@@ -47,13 +47,13 @@
             padding: 30px 35px;
             border-radius: 15px;
             font-size: 24px;
-            /* ALTERAÇÃO: A largura máxima padrão foi ajustada */
-            max-width: 600px;
-            width: auto;
+            /* ALTERAÇÃO: Largura máxima aumentada para evitar quebra de texto */
+            max-width: 800px;
+            width: 90%;
             text-align: center;
             border: 2px solid #ff6b00;
             opacity: 0;
-            transition: opacity 0.5s, top 0.3s ease-out, max-width 0.5s ease; /* Adicionada transição para max-width */
+            transition: opacity 0.5s, top 0.3s ease-out;
             z-index: 10;
             line-height: 1.5;
         }
@@ -89,12 +89,10 @@
             opacity: 1;
         }
 
+        /* Estilos comuns a ambos os botões */
         button {
             position: fixed;
-            /* ALTERAÇÃO: Botão posicionado mais para baixo */
-            bottom: 5%;
             left: 50%;
-            transform: translateX(-50%);
             padding: 12px 30px;
             font-size: 16px;
             background: #ff6b00;
@@ -107,6 +105,19 @@
             z-index: 30;
             white-space: nowrap;
         }
+
+        /* ALTERAÇÃO: Posição específica para o botão "Começar" (mais acima) */
+        button.start-position {
+            bottom: 20%;
+            transform: translateX(-50%);
+        }
+
+        /* ALTERAÇÃO: Posição específica para o botão "Ver novamente" (mais abaixo) */
+        button.restart-position {
+            bottom: 4%;
+            transform: translateX(-50%);
+        }
+
 
         button:hover {
             background: #ff8533;
@@ -121,7 +132,7 @@
             #dialogue {
                 font-size: 19px;
                 padding: 20px 22px;
-                max-width: 90%;
+                width: 90%;
             }
 
             #finalText {
@@ -134,8 +145,14 @@
             button {
                 padding: 10px 25px;
                 font-size: 14px;
-                /* ALTERAÇÃO: Posição do botão ajustada para telas menores */
-                bottom: 4%;
+            }
+
+             button.start-position {
+                bottom: 18%;
+            }
+
+            button.restart-position {
+                bottom: 3%;
             }
 
             #canvas {
@@ -160,7 +177,8 @@
     <canvas id="canvas"></canvas>
     <div id="dialogue"></div>
     <div id="finalText"></div>
-    <button id="startBtn">Começar 🎃</button>
+    <!-- ALTERAÇÃO: Adicionada a classe de posição inicial ao botão -->
+    <button id="startBtn" class="start-position">Começar 🎃</button>
 
     <audio id="halloween-music" preload="auto">
         <source src="https://res.cloudinary.com/dte38vdoe/video/upload/v1762141622/Andrew_Gold_-_Spooky_Scary_Skeletons_tradu%C3%A7%C3%A3o_PT_BR_v3dx54.mp3" type="audio/mpeg">
@@ -366,7 +384,6 @@
         function showDialogue(text, duration) {
             dialogue.innerHTML = text;
             
-            // Força o navegador a recalcular o layout
             void dialogue.offsetWidth;
 
             const dialogueHeight = dialogue.offsetHeight;
@@ -402,19 +419,19 @@
             }
         }
         
-        // ALTERAÇÃO: Aumentado o tempo de duração das mensagens
+        // ALTERAÇÃO: Aumentado significativamente o tempo de duração de todas as mensagens
         const dialogueTimings = {
-            scene1: 5000,
-            scene2: 8000,
-            scene3: 5000,
-            scene4: 8500,
-            scene5: 8000,
-            scene8: 8500,
-            scene9: 6000,
-            scene10: 7500,
-            scene11: 13000,
-            scene12: 6000,
-            scene13: 8000,
+            scene1: 8000,
+            scene2: 12000,
+            scene3: 8000,
+            scene4: 12500,
+            scene5: 12000,
+            scene8: 12500,
+            scene9: 9000,
+            scene10: 10500,
+            scene11: 18000,
+            scene12: 9000,
+            scene13: 11000,
         };
 
         function animate() {
@@ -433,29 +450,8 @@
                 case 8: stickman.blush = true; stickman.rotation = Math.sin(animationFrame * 0.08) * 0.15; stickman.draw(); if (animationFrame === 30) { showDialogue("Ai ai… já entendi! O Raphael me disse que colocou todo o carinho dele ao me criar… então acho que esse coração… era um pedacinho dele!", dialogueTimings.scene8); } if (animationFrame > (dialogueTimings.scene8/16.67) + 60) { scene = 9; animationFrame = 0; } break;
                 case 9: stickman.rotation = 0; stickman.blush = false; stickman.draw(); if (animationFrame === 30) { showDialogue("Humm, você deve estar se perguntando o motivo do por que eu estar aqui, né?", dialogueTimings.scene9); } if (animationFrame > (dialogueTimings.scene9/16.67) + 60) { scene = 10; animationFrame = 0; } break;
                 case 10: stickman.rotation = 0; if (animationFrame > 60 && animationFrame < 180) { stickman.handOnHead = true; } else { stickman.handOnHead = false; } stickman.draw(); if (animationFrame === 30) { showDialogue("Bem... Na verdade eu fugi do código! Raphael deve estar me procurando nesse exato momento...", dialogueTimings.scene10); } if (animationFrame > (dialogueTimings.scene10/16.67) + 60) { scene = 11; animationFrame = 0; } break;
-                case 11:
-                    stickman.blush = true; stickman.draw();
-                    if (animationFrame === 30) {
-                        // ALTERAÇÃO: Aumenta a largura da caixa de diálogo para esta cena específica
-                        dialogue.style.maxWidth = '800px';
-                        showDialogue("Eu fugi porque... Bem, eu vi que o Raphael está apaixonado por você, mas parece que ele não sabe muito bem dizer isso para você, né? Então eu fugi só para te contar isso! Mas é um segredo nosso, ok? Não deixe ele saber que você me viu!", dialogueTimings.scene11);
-                    }
-                    if (animationFrame > (dialogueTimings.scene11/16.67) + 60) {
-                        scene = 12;
-                        animationFrame = 0;
-                    }
-                    break;
-                case 12:
-                    // ALTERAÇÃO: Restaura a largura da caixa de diálogo
-                    if (animationFrame === 1) {
-                         dialogue.style.maxWidth = ''; // Volta ao padrão do CSS
-                    }
-                    screenShake.x = (Math.random() - 0.5) * 10; screenShake.y = (Math.random() - 0.5) * 10; stickman.shake = (Math.random() - 0.5) * 10; stickman.draw();
-                    if (animationFrame === 30) { showDialogue("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!", dialogueTimings.scene12); }
-                    if (animationFrame > (dialogueTimings.scene12/16.67) + 60) {
-                        screenShake.x = 0; screenShake.y = 0; scene = 13; animationFrame = 0;
-                    }
-                    break;
+                case 11: stickman.blush = true; stickman.draw(); if (animationFrame === 30) { showDialogue("Eu fugi porque... Bem, eu vi que o Raphael está apaixonado por você, mas parece que ele não sabe muito bem dizer isso para você, né? Então eu fugi só para te contar isso! Mas é um segredo nosso, ok? Não deixe ele saber que você me viu!", dialogueTimings.scene11); } if (animationFrame > (dialogueTimings.scene11/16.67) + 60) { scene = 12; animationFrame = 0; } break;
+                case 12: screenShake.x = (Math.random() - 0.5) * 10; screenShake.y = (Math.random() - 0.5) * 10; stickman.shake = (Math.random() - 0.5) * 10; stickman.draw(); if (animationFrame === 30) { showDialogue("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!", dialogueTimings.scene12); } if (animationFrame > (dialogueTimings.scene12/16.67) + 60) { screenShake.x = 0; screenShake.y = 0; scene = 13; animationFrame = 0; } break;
                 case 13:
                     if (animationFrame === 1) {
                         showDialogue("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!", dialogueTimings.scene13);
@@ -511,6 +507,11 @@
                         `;
                         finalText.classList.add('show');
                         startBtn.innerText = 'Ver novamente';
+                        
+                        // ALTERAÇÃO: Troca a classe de posição do botão
+                        startBtn.classList.remove('start-position');
+                        startBtn.classList.add('restart-position');
+                        
                         startBtn.style.display = 'block';
                     }
                     if (heartOpacity > 0) { heartOpacity -= 0.015; } else { heartOpacity = 0; }
@@ -527,7 +528,7 @@
             if (startBtn.innerText === 'Ver novamente') {
                 location.reload();
             } else {
-                audio.play().catch(e => console.log("A reprodução automática foi bloqueada pelo navegador."));
+                audio.play().catch(e => console.log("A reprodução automática foi bloqueada."));
                 startBtn.style.display = 'none';
                 canvas.classList.remove('hide');
                 Object.assign(stickman, new Stickman());

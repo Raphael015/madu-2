@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Halloween - Madu</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
+
         body {
             margin: 0;
             padding: 0;
@@ -15,35 +19,37 @@
             background: #0a0a0a;
             font-family: 'Comic Sans MS', cursive, sans-serif;
             overflow: hidden;
+            position: relative;
         }
 
-        /* MODIFICAÇÃO: Adicionada transição para o canvas */
         #canvas {
             border: 2px solid #ff6b00;
             box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
             transition: transform 1.5s ease-out, opacity 1.5s ease-out;
             transform: translateY(0);
             opacity: 1;
+            max-width: 100%;
+            max-height: 70vh;
+            display: block;
         }
 
-        /* NOVA CLASSE: Para esconder o canvas */
         #canvas.hide {
-            transform: translateY(-120%); /* Move para cima, para fora da tela */
+            transform: translateY(-120%);
             opacity: 0;
         }
 
-
         #dialogue {
-            position: absolute;
-            top: 50px;
+            position: fixed;
+            top: 10px;
             left: 50%;
             transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             color: #fff;
-            padding: 20px 30px;
+            padding: 15px 20px;
             border-radius: 15px;
-            font-size: 20px;
-            max-width: 600px;
+            font-size: 16px;
+            max-width: 90%;
+            width: auto;
             text-align: center;
             border: 2px solid #ff6b00;
             opacity: 0;
@@ -56,42 +62,39 @@
         }
 
         #finalText {
-            position: absolute;
+            position: fixed;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) scale(0.5);
             opacity: 0;
-            background: rgba(10, 10, 10, 0.9);
+            background: rgba(10, 10, 10, 0.95);
             color: #ffb700;
-            font-size: 18px;
+            font-size: 16px;
             text-align: left;
             text-shadow: 0 0 10px #ff6b00;
             transition: transform 1s ease-out, opacity 1s ease-out;
             z-index: 20;
             width: 90%;
             max-width: 700px;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
-            padding: 30px;
+            padding: 20px;
             border-radius: 15px;
             border: 2px solid #ff6b00;
-            box-sizing: border-box;
-            pointer-events: none;
         }
 
         #finalText.show {
             transform: translate(-50%, -50%) scale(1);
             opacity: 1;
-            pointer-events: all;
         }
 
         button {
-            position: absolute;
-            bottom: 30px;
+            position: fixed;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 15px 40px;
-            font-size: 18px;
+            padding: 12px 30px;
+            font-size: 16px;
             background: #ff6b00;
             color: white;
             border: none;
@@ -100,11 +103,53 @@
             font-family: 'Comic Sans MS', cursive, sans-serif;
             transition: all 0.3s;
             z-index: 30;
+            white-space: nowrap;
         }
 
         button:hover {
             background: #ff8533;
-            transform: translateX(-50%) scale(1.1);
+            transform: translateX(-50%) scale(1.05);
+        }
+
+        button:active {
+            transform: translateX(-50%) scale(0.95);
+        }
+
+        @media (max-width: 768px) {
+            #dialogue {
+                font-size: 14px;
+                padding: 12px 15px;
+                max-width: 95%;
+            }
+
+            #finalText {
+                font-size: 14px;
+                padding: 15px;
+                width: 95%;
+                max-height: 80vh;
+            }
+
+            button {
+                padding: 10px 25px;
+                font-size: 14px;
+                bottom: 15px;
+            }
+
+            #canvas {
+                max-height: 60vh;
+            }
+        }
+
+        @media (max-width: 480px) {
+            #dialogue {
+                font-size: 13px;
+                padding: 10px 12px;
+            }
+
+            #finalText {
+                font-size: 13px;
+                padding: 12px;
+            }
         }
     </style>
 </head>
@@ -114,20 +159,36 @@
     <div id="finalText"></div>
     <button id="startBtn">Começar 🎃</button>
 
-    <!-- ÁUDIO ADICIONADO AQUI -->
-    <audio id="halloween-music" src="https://res.cloudinary.com/dte38vdoe/video/upload/v1762141622/Andrew_Gold_-_Spooky_Scary_Skeletons_tradu%C3%A7%C3%A3o_PT_BR_v3dx54.mp3" loop></audio>
-
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const dialogue = document.getElementById('dialogue');
         const startBtn = document.getElementById('startBtn');
         const finalText = document.getElementById('finalText');
-        // NOVA CONSTANTE PARA O ÁUDIO
-        const halloweenMusic = document.getElementById('halloween-music');
 
-        canvas.width = 800;
-        canvas.height = 600;
+        // Responsividade do canvas
+        function resizeCanvas() {
+            const maxWidth = Math.min(800, window.innerWidth - 20);
+            const maxHeight = Math.min(600, window.innerHeight * 0.7);
+            const aspectRatio = 800 / 600;
+            
+            if (maxWidth / maxHeight > aspectRatio) {
+                canvas.height = maxHeight;
+                canvas.width = maxHeight * aspectRatio;
+            } else {
+                canvas.width = maxWidth;
+                canvas.height = maxWidth / aspectRatio;
+            }
+        }
+
+        resizeCanvas();
+        window.addEventListener('resize', () => {
+            resizeCanvas();
+            if (scene === 0) {
+                ctx.fillStyle = '#0a0a0a';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+            }
+        });
 
         let scene = 0;
         let animationFrame = 0;
@@ -138,7 +199,6 @@
         let portal = { x: 0, y: 0, radius: 0, opacity: 0 };
         let heartOpacity = 1;
 
-        // As classes (Stickman, Pumpkin, Spark) permanecem as mesmas.
         class Stickman {
             constructor() {
                 this.x = canvas.width / 2;
@@ -352,7 +412,6 @@
             animationFrame++;
 
             switch(scene) {
-                // As cenas de 1 a 13 permanecem as mesmas
                 case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { showDialogue("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!", dialogueTimings.scene1); } if (animationFrame > (dialogueTimings.scene1/16.67) + 60) { scene = 2; animationFrame = 0; } break;
                 case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
                 case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
@@ -446,7 +505,7 @@
                         `;
                         finalText.classList.add('show');
                         
-                        startBtn.innerText = 'Reiniciar';
+                        startBtn.innerText = 'Ver novamente';
                         startBtn.style.display = 'block';
                     }
 
@@ -469,20 +528,13 @@
             }
         }
 
-        // --- CÓDIGO MODIFICADO ABAIXO ---
         startBtn.addEventListener('click', () => {
-            // Se o botão for para "Reiniciar", recarrega a página
-            if (startBtn.innerText === 'Reiniciar') {
+            if (startBtn.innerText === 'Ver novamente') {
                 location.reload();
             } else {
-                // Comportamento original para iniciar a animação
                 startBtn.style.display = 'none';
                 canvas.classList.remove('hide');
 
-                // TOCA A MÚSICA
-                halloweenMusic.play();
-
-                // Reseta o estado da animação
                 Object.assign(stickman, new Stickman());
                 scene = 1;
                 animationFrame = 0;
@@ -497,7 +549,6 @@
             }
         });
 
-        // Estado inicial
         ctx.fillStyle = '#0a0a0a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     </script>

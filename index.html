@@ -45,9 +45,11 @@
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             color: #fff;
-            padding: 25px 30px;
+            /* ALTERAÇÃO: Aumentado o padding */
+            padding: 30px 35px;
             border-radius: 15px;
-            font-size: 20px;
+            /* ALTERAÇÃO: Aumentado o tamanho da fonte */
+            font-size: 24px;
             max-width: 85%;
             width: auto;
             text-align: center;
@@ -91,7 +93,8 @@
 
         button {
             position: fixed;
-            bottom: 20px;
+            /* ALTERAÇÃO: Aumentado o valor de 'bottom' para subir o botão */
+            bottom: 50px;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 30px;
@@ -118,8 +121,10 @@
 
         @media (max-width: 768px) {
             #dialogue {
-                font-size: 15px;
-                padding: 15px 18px;
+                /* ALTERAÇÃO: Ajustado o tamanho da fonte para telas médias */
+                font-size: 19px;
+                /* ALTERAÇÃO: Ajustado o padding para telas médias */
+                padding: 20px 22px;
                 max-width: 90%;
                 top: 30px;
             }
@@ -134,7 +139,8 @@
             button {
                 padding: 10px 25px;
                 font-size: 14px;
-                bottom: 15px;
+                /* ALTERAÇÃO: Ajustado o 'bottom' para telas médias */
+                bottom: 30px;
             }
 
             #canvas {
@@ -144,8 +150,10 @@
 
         @media (max-width: 480px) {
             #dialogue {
-                font-size: 14px;
-                padding: 12px 15px;
+                /* ALTERAÇÃO: Ajustado o tamanho da fonte para telas pequenas */
+                font-size: 16px;
+                 /* ALTERAÇÃO: Ajustado o padding para telas pequenas */
+                padding: 15px 18px;
                 top: 20px;
             }
 
@@ -162,14 +170,19 @@
     <div id="finalText"></div>
     <button id="startBtn">Começar 🎃</button>
 
+    <audio id="halloween-music" preload="auto">
+        <source src="https://res.cloudinary.com/dte38vdoe/video/upload/v1762141622/Andrew_Gold_-_Spooky_Scary_Skeletons_tradu%C3%A7%C3%A3o_PT_BR_v3dx54.mp3" type="audio/mpeg">
+        Seu navegador não suporta o elemento de áudio.
+    </audio>
+
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const dialogue = document.getElementById('dialogue');
         const startBtn = document.getElementById('startBtn');
         const finalText = document.getElementById('finalText');
+        const audio = document.getElementById('halloween-music');
 
-        // Responsividade do canvas
         function resizeCanvas() {
             const maxWidth = Math.min(800, window.innerWidth - 20);
             const maxHeight = Math.min(600, window.innerHeight * 0.7);
@@ -223,24 +236,18 @@
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
-
                 const idleBob = Math.sin(animationFrame * 0.08) * 0.75; 
                 const idleSway = Math.sin(animationFrame * 0.05) * 0.01;
-
                 ctx.translate(this.x + this.shake, this.y + idleBob);
                 ctx.rotate(this.rotation + idleSway);
-                
                 ctx.scale(this.scale, this.scale);
-
                 ctx.strokeStyle = '#fff';
                 ctx.lineWidth = 4;
                 ctx.lineCap = 'round';
-
                 ctx.beginPath();
                 ctx.moveTo(0, -this.bodyLength);
                 ctx.lineTo(0, 0);
                 ctx.stroke();
-
                 const legWave = Math.sin(animationFrame * 0.04) * 3; 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
@@ -250,11 +257,9 @@
                 ctx.moveTo(0, 0);
                 ctx.lineTo(20 - legWave, this.legLength);
                 ctx.stroke();
-
                 ctx.save();
                 const headBob = Math.sin(animationFrame * 0.07) * 1.5;
                 ctx.translate(0, headBob);
-
                 if (this.glow > 0) {
                     ctx.shadowBlur = 20 + this.glow;
                     ctx.shadowColor = '#ff6b00';
@@ -302,7 +307,6 @@
                     ctx.fill();
                 }
                 ctx.restore();
-
                 const armWave = Math.sin(animationFrame * 0.05) * 4; 
                 if (this.handOnHead) {
                     ctx.beginPath();
@@ -321,12 +325,10 @@
                     ctx.lineTo(-this.armLength, -this.bodyLength + 35 + armWave);
                     ctx.stroke();
                 }
-
                 ctx.beginPath();
                 ctx.moveTo(0, -this.bodyLength + 15);
                 ctx.lineTo(this.armLength, -this.bodyLength + 35 - armWave);
                 ctx.stroke();
-                
                 ctx.restore();
             }
         }
@@ -408,10 +410,8 @@
         function animate() {
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
             ctx.save();
             ctx.translate(screenShake.x, screenShake.y);
-
             animationFrame++;
 
             switch(scene) {
@@ -429,36 +429,18 @@
                     if (animationFrame === 1) {
                         showDialogue("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!", dialogueTimings.scene13);
                         createHeart();
-                        heartPumpkins.forEach(p => {
-                            p.x = Math.random() * canvas.width;
-                            p.y = Math.random() * canvas.height;
-                        });
+                        heartPumpkins.forEach(p => { p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height; });
                         pumpkins = heartPumpkins;
                     }
-
                     if (animationFrame > 1) {
-                        pumpkins.forEach(p => {
-                            if (animationFrame < 120) {
-                                p.x += (p.targetX - p.x) * 0.1;
-                                p.y += (p.targetY - p.y) * 0.1;
-                            }
-                            p.rotation += 0.05;
-                            p.draw();
-                        });
-
-                        sparks.forEach((s, index) => {
-                            s.update();
-                            s.draw();
-                            if (s.opacity <= 0) sparks.splice(index, 1);
-                        });
+                        pumpkins.forEach(p => { if (animationFrame < 120) { p.x += (p.targetX - p.x) * 0.1; p.y += (p.targetY - p.y) * 0.1; } p.rotation += 0.05; p.draw(); });
+                        sparks.forEach((s, index) => { s.update(); s.draw(); if (s.opacity <= 0) sparks.splice(index, 1); });
                     }
-
                     if (animationFrame > 150 && animationFrame < 400) {
                         portal.x = canvas.width / 2;
                         portal.y = canvas.height / 2;
                         if (portal.radius < 80) portal.radius += 2;
                         if (portal.opacity < 1) portal.opacity += 0.05;
-
                         ctx.globalAlpha = portal.opacity;
                         ctx.beginPath();
                         ctx.arc(portal.x, portal.y, portal.radius, 0, Math.PI * 2);
@@ -469,7 +451,6 @@
                         ctx.shadowBlur = 0;
                         ctx.globalAlpha = 1;
                     }
-
                     if (animationFrame > 200 && stickman.opacity > 0) {
                         stickman.waving = true;
                         const dx = portal.x - stickman.x;
@@ -479,25 +460,15 @@
                         stickman.scale *= 0.98;
                         stickman.opacity *= 0.98;
                     }
-
                     if (Math.floor(stickman.opacity * 100) == 1 && sparks.length === 0) {
-                         for (let i = 0; i < 50; i++) {
-                            sparks.push(new Spark(portal.x, portal.y));
-                        }
+                         for (let i = 0; i < 50; i++) { sparks.push(new Spark(portal.x, portal.y)); }
                     }
-                    
                     if (stickman.opacity > 0) stickman.draw();
-
-                    if (animationFrame > 450) {
-                        scene = 14;
-                        animationFrame = 0;
-                    }
+                    if (animationFrame > 450) { scene = 14; animationFrame = 0; }
                     break;
-
                 case 14:
                     if (animationFrame === 1) {
                         canvas.classList.add('hide');
-
                         finalText.innerHTML = `
                         <p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p>
                         <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p>
@@ -507,37 +478,26 @@
                         <p>Para mim, você é a <strong>pessoa certa</strong>, e eu nunca tive tanta certeza disso. Você é a única e sempre será a única que fará meus olhos brilharem. Tenho certeza absoluta: é você, é você que é a <strong>mulher certa</strong> para mim, meu amor.</p>
                         `;
                         finalText.classList.add('show');
-                        
                         startBtn.innerText = 'Ver novamente';
                         startBtn.style.display = 'block';
                     }
-
-                    if (heartOpacity > 0) {
-                        heartOpacity -= 0.015;
-                    } else {
-                        heartOpacity = 0;
-                    }
-                    
+                    if (heartOpacity > 0) { heartOpacity -= 0.015; } else { heartOpacity = 0; }
                     ctx.globalAlpha = heartOpacity;
                     pumpkins.forEach(p => { p.draw(); });
                     ctx.globalAlpha = 1;
-
                     break;
             }
-
             ctx.restore();
-            if (scene !== 0) {
-                 requestAnimationFrame(animate);
-            }
+            if (scene !== 0) { requestAnimationFrame(animate); }
         }
 
         startBtn.addEventListener('click', () => {
             if (startBtn.innerText === 'Ver novamente') {
                 location.reload();
             } else {
+                audio.play();
                 startBtn.style.display = 'none';
                 canvas.classList.remove('hide');
-
                 Object.assign(stickman, new Stickman());
                 scene = 1;
                 animationFrame = 0;

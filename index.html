@@ -17,14 +17,12 @@
             overflow: hidden;
         }
 
-        /* MODIFICAÇÃO: Canvas agora é responsivo */
         #canvas {
             border: 2px solid #ff6b00;
             box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
             transition: transform 1.5s ease-out, opacity 1.5s ease-out;
             transform: translateY(0);
             opacity: 1;
-            /* Adicionado para garantir que o canvas se ajuste corretamente */
             display: block;
             max-width: 100%;
             max-height: 100%;
@@ -37,15 +35,15 @@
 
         #dialogue {
             position: absolute;
-            top: 50px;
+            top: 70px; /* ALTERADO: Movido mais para baixo */
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             padding: 20px 30px;
             border-radius: 15px;
-            font-size: 20px;
-            width: 80%; /* Usar porcentagem para responsividade */
+            font-size: 22px; /* ALTERADO: Texto maior */
+            width: 80%;
             max-width: 600px;
             text-align: center;
             border: 2px solid #ff6b00;
@@ -66,7 +64,7 @@
             opacity: 0;
             background: rgba(10, 10, 10, 0.9);
             color: #ffb700;
-            font-size: 18px;
+            font-size: 19px; /* ALTERADO: Texto maior */
             text-align: left;
             text-shadow: 0 0 10px #ff6b00;
             transition: transform 1s ease-out, opacity 1s ease-out;
@@ -110,16 +108,16 @@
             transform: translateX(-50%) scale(1.1);
         }
 
-        /* NOVA REGRA: Media queries para dispositivos móveis */
+        /* Media queries para dispositivos móveis */
         @media (max-width: 768px) {
             #dialogue {
-                font-size: 16px;
+                font-size: 18px; /* ALTERADO: Texto maior no mobile */
                 padding: 15px 20px;
-                top: 30px;
+                top: 80px; /* ALTERADO: Movido mais para baixo no mobile */
             }
 
             #finalText {
-                font-size: 15px;
+                font-size: 17px; /* ALTERADO: Texto maior no mobile */
                 padding: 20px;
             }
 
@@ -144,27 +142,23 @@
         const startBtn = document.getElementById('startBtn');
         const finalText = document.getElementById('finalText');
 
-        // MODIFICAÇÃO: Variáveis para responsividade
         let scaleFactor = 1;
 
         function resizeCanvas() {
             const originalWidth = 800;
             const originalHeight = 600;
             
-            // Ajusta o tamanho do canvas para a janela, mantendo a proporção
             const scaleX = window.innerWidth / originalWidth;
             const scaleY = window.innerHeight / originalHeight;
-            scaleFactor = Math.min(scaleX, scaleY) * 0.95; // 0.95 para dar uma margem
+            scaleFactor = Math.min(scaleX, scaleY) * 0.98; /* ALTERADO: Usa um pouco mais da tela */
 
             canvas.width = originalWidth * scaleFactor;
             canvas.height = originalHeight * scaleFactor;
 
-            // Centraliza o canvas se a proporção não for a mesma da tela
             canvas.style.position = 'absolute';
             canvas.style.left = `${(window.innerWidth - canvas.width) / 2}px`;
             canvas.style.top = `${(window.innerHeight - canvas.height) / 2}px`;
         }
-
 
         let scene = 0;
         let animationFrame = 0;
@@ -175,16 +169,16 @@
         let portal = { x: 0, y: 0, radius: 0, opacity: 0 };
         let heartOpacity = 1;
 
-        // As classes foram ajustadas para usar o scaleFactor
         class Stickman {
             constructor() {
                 this.x = canvas.width / 2;
                 this.y = canvas.height / 2;
                 this.scale = 1 * scaleFactor;
-                this.headSize = 40 * scaleFactor;
-                this.bodyLength = 60 * scaleFactor;
-                this.armLength = 40 * scaleFactor;
-                this.legLength = 50 * scaleFactor;
+                /* ALTERADO: Aumentei os valores base para o personagem ser maior */
+                this.headSize = 50 * scaleFactor;
+                this.bodyLength = 75 * scaleFactor;
+                this.armLength = 50 * scaleFactor;
+                this.legLength = 60 * scaleFactor;
                 this.shake = 0;
                 this.rotation = 0;
                 this.glow = 0;
@@ -382,7 +376,7 @@
             animationFrame++;
 
             switch(scene) {
-                // As cenas de 1 a 13 permanecem as mesmas
+                // As cenas permanecem as mesmas
                 case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3 * scaleFactor; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { showDialogue("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!", dialogueTimings.scene1); } if (animationFrame > (dialogueTimings.scene1/16.67) + 60) { scene = 2; animationFrame = 0; } break;
                 case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5 * scaleFactor; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
                 case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1 * scaleFactor; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
@@ -405,9 +399,9 @@
                 case 14:
                     if (animationFrame === 1) {
                         canvas.classList.add('hide');
-                        finalText.innerHTML = `<p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p> <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p> <p>Mas enfim, enquanto eu criava tudo isso, pensei sobre tudo o que já tivemos e, nossa, como eu queria muito te <strong>pedir em namoro</strong>, tipo AGORA, mas eu quero fazer algo <strong>especial</strong> para ti, entende? Você merece isso. Eu sei que pode ser um pouco frustrante, mas te peço um pouquinho de paciência sobre isso, tá? Até porque, eu te prometo, Madu, eu vou te pedir em namoro em breve.</p> <p>Sabe como eu tenho tanta certeza disso? É porque eu te considero <strong>muito especial</strong>, meu amor. Eu sei, eu sei que às vezes tudo pode ser um pouco difícil, cansativo e chato, sabe? Mas eu quero que você saiba que, independentemente do momento, eu vou estar sempre aqui com você, ao seu lado, tentando te ajudar de alguma forma, pois você é <strong>incrível</strong> para mim, sabia?</p> <p>Você é a mulher mais <strong>bela, incrível, leal, elegante, inteligente, criativa, engraçada, memorável, paciente, confiável, educada, responsável, talentosa, dedicada, esforçada, encantadora, brilhante e admirável em todos os sentidos</strong>. E por conta de todos esses detalhes, eu gosto <strong>MUITOOOOOOOO</strong> de você, de verdade.</p> <p>Para mim, você é a <strong>pessoa certa</strong>, и eu никогда не был в этом так уверен. Você é a única e sempre será a única que fará meus olhos brilharem. Tenho certeza absoluta: é você, é você que é a <strong>mulher certa</strong> para mim, meu amor.</p>`;
+                        finalText.innerHTML = `<p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p> <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p> <p>Mas enfim, enquanto eu criava tudo isso, pensei sobre tudo o que já tivemos e, nossa, como eu queria muito te <strong>pedir em namoro</strong>, tipo AGORA, mas eu quero fazer algo <strong>especial</strong> para ti, entende? Você merece isso. Eu sei que pode ser um pouco frustrante, mas te peço um pouquinho de paciência sobre isso, tá? Até porque, eu te prometo, Madu, eu vou te pedir em namoro em breve.</p> <p>Sabe como eu tenho tanta certeza disso? É porque eu te considero <strong>muito especial</strong>, meu amor. Eu sei, eu sei que às vezes tudo pode ser um pouco difícil, cansativo e chato, sabe? Mas eu quero que você saiba que, independentemente do momento, eu vou estar sempre aqui com você, ao seu lado, tentando te ajudar de alguma forma, pois você é <strong>incrível</strong> para mim, sabia?</p> <p>Você é a mulher mais <strong>bela, incrível, leal, elegante, inteligente, criativa, engraçada, memorável, paciente, confiável, educada, responsável, talentosa, dedicada, esforçada, encantadora, brilhante e admirável em todos os sentidos</strong>. E por conta de todos esses detalhes, eu gosto <strong>MUITOOOOOOOO</strong> de você, de verdade.</p> <p>Para mim, você é a <strong>pessoa certa</strong>, e eu nunca tive tanta certeza disso. Você é a única e sempre será a única que fará meus olhos brilharem. Tenho certeza absoluta: é você, é você que é a <strong>mulher certa</strong> para mim, meu amor.</p>`;
                         finalText.classList.add('show');
-                        startBtn.innerText = 'Ver novamente 🔁'; // MODIFICADO: Texto do botão
+                        startBtn.innerText = 'Ver novamente 🔁';
                         startBtn.style.display = 'block';
                     }
                     if (heartOpacity > 0) { heartOpacity -= 0.015; } else { heartOpacity = 0; }
@@ -422,12 +416,10 @@
         }
 
         function resetAndStart() {
-            // Comportamento original para iniciar a animação
             startBtn.style.display = 'none';
             canvas.classList.remove('hide');
-            resizeCanvas(); // Garante que o canvas tem o tamanho certo
+            resizeCanvas();
 
-            // Reseta o estado da animação
             stickman = new Stickman();
             scene = 1;
             animationFrame = 0;
@@ -443,27 +435,22 @@
 
         startBtn.addEventListener('click', () => {
             if (startBtn.innerText === 'Ver novamente 🔁') {
-                // Ao invés de recarregar, apenas reseta o estado
                 resetAndStart();
             } else {
                 resetAndStart();
             }
         });
 
-        // --- Event Listener para Redimensionamento ---
         window.addEventListener('resize', () => {
-            // Se a animação não estiver rodando, apenas redesenha o fundo
             if (scene === 0 || scene === 14) {
                  resizeCanvas();
                  ctx.fillStyle = '#0a0a0a';
                  ctx.fillRect(0, 0, canvas.width, canvas.height);
             } else {
-                // Se estiver rodando, reinicia para evitar bugs visuais
                 resetAndStart();
             }
         });
 
-        // --- Estado Inicial ---
         resizeCanvas();
         ctx.fillStyle = '#0a0a0a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);

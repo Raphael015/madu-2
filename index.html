@@ -47,7 +47,6 @@
             padding: 30px 35px;
             border-radius: 15px;
             font-size: 24px;
-            /* ALTERAÇÃO: Largura máxima aumentada para evitar quebra de texto */
             max-width: 800px;
             width: 90%;
             text-align: center;
@@ -89,7 +88,6 @@
             opacity: 1;
         }
 
-        /* Estilos comuns a ambos os botões */
         button {
             position: fixed;
             left: 50%;
@@ -106,13 +104,11 @@
             white-space: nowrap;
         }
 
-        /* ALTERAÇÃO: Posição específica para o botão "Começar" (mais acima) */
         button.start-position {
             bottom: 20%;
             transform: translateX(-50%);
         }
 
-        /* ALTERAÇÃO: Posição específica para o botão "Ver novamente" (mais abaixo) */
         button.restart-position {
             bottom: 4%;
             transform: translateX(-50%);
@@ -177,7 +173,6 @@
     <canvas id="canvas"></canvas>
     <div id="dialogue"></div>
     <div id="finalText"></div>
-    <!-- ALTERAÇÃO: Adicionada a classe de posição inicial ao botão -->
     <button id="startBtn" class="start-position">Começar 🎃</button>
 
     <audio id="halloween-music" preload="auto">
@@ -398,9 +393,12 @@
             dialogue.style.top = newTop + 'px';
             dialogue.classList.add('show');
             
-            setTimeout(() => {
-                dialogue.classList.remove('show');
-            }, duration);
+            // Oculta a mensagem APENAS se a duração não for infinita
+            if (duration !== Infinity) {
+                setTimeout(() => {
+                    dialogue.classList.remove('show');
+                }, duration);
+            }
         }
 
 
@@ -419,19 +417,19 @@
             }
         }
         
-        // ALTERAÇÃO: Aumentado significativamente o tempo de duração de todas as mensagens
+        // ALTERAÇÃO: Aumentado MUITO MAIS o tempo de duração de todas as mensagens.
         const dialogueTimings = {
-            scene1: 8000,
-            scene2: 12000,
-            scene3: 8000,
-            scene4: 12500,
-            scene5: 12000,
-            scene8: 12500,
-            scene9: 9000,
-            scene10: 10500,
-            scene11: 18000,
-            scene12: 9000,
-            scene13: 11000,
+            scene1: 12000,    // 12 segundos
+            scene2: 18000,    // 18 segundos
+            scene3: 12000,    // 12 segundos
+            scene4: 20000,    // 20 segundos
+            scene5: 18000,    // 18 segundos
+            scene8: 18000,    // 18 segundos
+            scene9: 14000,    // 14 segundos
+            scene10: 16000,   // 16 segundos
+            scene11: 28000,   // 28 segundos (bem longa)
+            scene12: 14000,   // 14 segundos
+            scene13: 16000,   // 16 segundos
         };
 
         function animate() {
@@ -508,7 +506,6 @@
                         finalText.classList.add('show');
                         startBtn.innerText = 'Ver novamente';
                         
-                        // ALTERAÇÃO: Troca a classe de posição do botão
                         startBtn.classList.remove('start-position');
                         startBtn.classList.add('restart-position');
                         

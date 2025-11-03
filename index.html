@@ -47,6 +47,7 @@
             padding: 30px 35px;
             border-radius: 15px;
             font-size: 24px;
+            /* ALTERAÇÃO: Largura máxima aumentada para evitar quebra de texto */
             max-width: 800px;
             width: 90%;
             text-align: center;
@@ -88,6 +89,7 @@
             opacity: 1;
         }
 
+        /* Estilos comuns a ambos os botões */
         button {
             position: fixed;
             left: 50%;
@@ -104,11 +106,13 @@
             white-space: nowrap;
         }
 
+        /* ALTERAÇÃO: Posição específica para o botão "Começar" (mais acima) */
         button.start-position {
             bottom: 20%;
             transform: translateX(-50%);
         }
 
+        /* ALTERAÇÃO: Posição específica para o botão "Ver novamente" (mais abaixo) */
         button.restart-position {
             bottom: 4%;
             transform: translateX(-50%);
@@ -173,6 +177,7 @@
     <canvas id="canvas"></canvas>
     <div id="dialogue"></div>
     <div id="finalText"></div>
+    <!-- ALTERAÇÃO: Adicionada a classe de posição inicial ao botão -->
     <button id="startBtn" class="start-position">Começar 🎃</button>
 
     <audio id="halloween-music" preload="auto">
@@ -393,12 +398,9 @@
             dialogue.style.top = newTop + 'px';
             dialogue.classList.add('show');
             
-            // Oculta a mensagem APENAS se a duração não for infinita
-            if (duration !== Infinity) {
-                setTimeout(() => {
-                    dialogue.classList.remove('show');
-                }, duration);
-            }
+            setTimeout(() => {
+                dialogue.classList.remove('show');
+            }, duration);
         }
 
 
@@ -417,19 +419,19 @@
             }
         }
         
-        // ALTERAÇÃO: Aumentado MUITO MAIS o tempo de duração de todas as mensagens.
+        // ALTERAÇÃO: Aumentado significativamente o tempo de duração de todas as mensagens
         const dialogueTimings = {
-            scene1: 12000,    // 12 segundos
-            scene2: 18000,    // 18 segundos
-            scene3: 12000,    // 12 segundos
-            scene4: 20000,    // 20 segundos
-            scene5: 18000,    // 18 segundos
-            scene8: 18000,    // 18 segundos
-            scene9: 14000,    // 14 segundos
-            scene10: 16000,   // 16 segundos
-            scene11: 28000,   // 28 segundos (bem longa)
-            scene12: 14000,   // 14 segundos
-            scene13: 16000,   // 16 segundos
+            scene1: 8000,
+            scene2: 12000,
+            scene3: 8000,
+            scene4: 12500,
+            scene5: 12000,
+            scene8: 12500,
+            scene9: 9000,
+            scene10: 10500,
+            scene11: 18000,
+            scene12: 9000,
+            scene13: 11000,
         };
 
         function animate() {
@@ -496,7 +498,7 @@
                         canvas.classList.add('hide');
                         finalText.innerHTML = `
                         <p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p>
-                        <p style="text-align: center;"><strong>💖 Feliz 15 dias! 🥰</strong></p>
+                        <p style="text-align: center;"><strong>E Feliz 15 dias!! </strong></p>
                         <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p>
                         <p>Mas enfim, enquanto eu criava tudo isso, pensei sobre tudo o que já tivemos e, nossa, como eu queria muito te <strong>pedir em namoro</strong>, tipo AGORA, mas eu quero fazer algo <strong>especial</strong> para ti, entende? Você merece isso. Eu sei que pode ser um pouco frustrante, mas te peço um pouquinho de paciência sobre isso, tá? Até porque, eu te prometo, Madu, eu vou te pedir em namoro em breve.</p>
                         <p>Sabe como eu tenho tanta certeza disso? É porque eu te considero <strong>muito especial</strong>, meu amor. Eu sei, eu sei que às vezes tudo pode ser um pouco difícil, cansativo e chato, sabe? Mas eu quero que você saiba que, independentemente do momento, eu vou estar sempre aqui com você, ao seu lado, tentando te ajudar de alguma forma, pois você é <strong>incrível</strong> para mim, sabia?</p>
@@ -506,6 +508,7 @@
                         finalText.classList.add('show');
                         startBtn.innerText = 'Ver novamente';
                         
+                        // ALTERAÇÃO: Troca a classe de posição do botão
                         startBtn.classList.remove('start-position');
                         startBtn.classList.add('restart-position');
                         

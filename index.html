@@ -40,22 +40,20 @@
 
         #dialogue {
             position: fixed;
-            top: 60px;
+            /* ALTERAÇÃO: 'top' foi removido daqui e será controlado pelo JavaScript */
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             color: #fff;
-            /* ALTERAÇÃO: Aumentado o padding */
             padding: 30px 35px;
             border-radius: 15px;
-            /* ALTERAÇÃO: Aumentado o tamanho da fonte */
             font-size: 24px;
             max-width: 85%;
             width: auto;
             text-align: center;
             border: 2px solid #ff6b00;
             opacity: 0;
-            transition: opacity 0.5s;
+            transition: opacity 0.5s, top 0.3s ease-out; /* Adicionada transição para 'top' */
             z-index: 10;
             line-height: 1.5;
         }
@@ -93,8 +91,8 @@
 
         button {
             position: fixed;
-            /* ALTERAÇÃO: Aumentado o valor de 'bottom' para subir o botão */
-            bottom: 50px;
+            /* ALTERAÇÃO: Botão BEM mais pra cima agora */
+            bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
             padding: 12px 30px;
@@ -121,12 +119,10 @@
 
         @media (max-width: 768px) {
             #dialogue {
-                /* ALTERAÇÃO: Ajustado o tamanho da fonte para telas médias */
                 font-size: 19px;
-                /* ALTERAÇÃO: Ajustado o padding para telas médias */
                 padding: 20px 22px;
                 max-width: 90%;
-                top: 30px;
+                /* ALTERAÇÃO: 'top' removido daqui também */
             }
 
             #finalText {
@@ -139,8 +135,8 @@
             button {
                 padding: 10px 25px;
                 font-size: 14px;
-                /* ALTERAÇÃO: Ajustado o 'bottom' para telas médias */
-                bottom: 30px;
+                /* ALTERAÇÃO: Posição do botão ajustada para telas menores */
+                bottom: 12%;
             }
 
             #canvas {
@@ -150,11 +146,8 @@
 
         @media (max-width: 480px) {
             #dialogue {
-                /* ALTERAÇÃO: Ajustado o tamanho da fonte para telas pequenas */
                 font-size: 16px;
-                 /* ALTERAÇÃO: Ajustado o padding para telas pequenas */
                 padding: 15px 18px;
-                top: 20px;
             }
 
             #finalText {
@@ -370,13 +363,35 @@
         }
 
         const stickman = new Stickman();
+
+        // ALTERAÇÃO: Função showDialogue foi reescrita para calcular a posição
         function showDialogue(text, duration) {
             dialogue.innerHTML = text;
+            
+            // Força o navegador a calcular o tamanho do diálogo com o novo texto
+            const dialogueHeight = dialogue.offsetHeight;
+            const canvasRect = canvas.getBoundingClientRect();
+            
+            // Calcula a nova posição: 20px acima do canvas
+            let newTop = canvasRect.top - dialogueHeight - 20;
+
+            // Garante que o diálogo não saia da tela por cima
+            if (newTop < 10) {
+                newTop = 10;
+            }
+
+            // Define a nova posição
+            dialogue.style.top = newTop + 'px';
+
+            // Mostra o diálogo
             dialogue.classList.add('show');
+            
+            // Esconde depois da duração definida
             setTimeout(() => {
                 dialogue.classList.remove('show');
             }, duration);
         }
+
 
         function createExplosion() { for (let i = 0; i < 30; i++) { pumpkins.push(new Pumpkin(stickman.x, stickman.y - 60)); } }
         function createHeart() {

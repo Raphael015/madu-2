@@ -40,21 +40,22 @@
 
         #dialogue {
             position: fixed;
-            top: 10px;
+            top: 40px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
             color: #fff;
-            padding: 15px 20px;
+            padding: 20px 25px;
             border-radius: 15px;
-            font-size: 16px;
-            max-width: 90%;
+            font-size: 18px;
+            max-width: 85%;
             width: auto;
             text-align: center;
             border: 2px solid #ff6b00;
             opacity: 0;
             transition: opacity 0.5s;
             z-index: 10;
+            line-height: 1.4;
         }
 
         #dialogue.show {
@@ -117,9 +118,10 @@
 
         @media (max-width: 768px) {
             #dialogue {
-                font-size: 14px;
-                padding: 12px 15px;
-                max-width: 95%;
+                font-size: 15px;
+                padding: 15px 18px;
+                max-width: 90%;
+                top: 30px;
             }
 
             #finalText {
@@ -142,8 +144,9 @@
 
         @media (max-width: 480px) {
             #dialogue {
-                font-size: 13px;
-                padding: 10px 12px;
+                font-size: 14px;
+                padding: 12px 15px;
+                top: 20px;
             }
 
             #finalText {
@@ -202,7 +205,7 @@
         class Stickman {
             constructor() {
                 this.x = canvas.width / 2;
-                this.y = canvas.height / 2;
+                this.y = canvas.height / 2 + 80;
                 this.scale = 1;
                 this.headSize = 40;
                 this.bodyLength = 60;
@@ -379,11 +382,11 @@
             for (let t = 0; t < Math.PI * 2; t += 0.1) {
                 const x = 16 * Math.pow(Math.sin(t), 3);
                 const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                heartPoints.push({ x: canvas.width/2 + x * 12, y: canvas.height/2 + y * 12 });
+                heartPoints.push({ x: canvas.width/2 + x * 9, y: canvas.height/2 + y * 9 });
             }
             for (let i = 0; i < heartPoints.length; i++) {
                 const p = new Pumpkin(heartPoints[i].x, heartPoints[i].y);
-                p.vx = 0; p.vy = 0; p.targetX = heartPoints[i].x; p.targetY = heartPoints[i].y; p.size = 12;
+                p.vx = 0; p.vy = 0; p.targetX = heartPoints[i].x; p.targetY = heartPoints[i].y; p.size = 10;
                 heartPumpkins.push(p);
             }
         }
@@ -416,7 +419,7 @@
                 case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
                 case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
                 case 4: if (animationFrame < 90) { stickman.blush = true; stickman.shake = Math.sin(animationFrame * 0.5) * 5; } else if (animationFrame === 90) { createExplosion(); } else { stickman.opacity = 0; } stickman.draw(); pumpkins.forEach(p => { p.update(); p.draw(); }); if (animationFrame === 30) { showDialogue("O quê? Você tá rindo? Você tá rindo de mim? Ah não… tô com vergonha!! Grrr… por quê o Raphael me criou assim?", dialogueTimings.scene4); } if (animationFrame > (dialogueTimings.scene4/16.67) + 60) { scene = 5; animationFrame = 0; } break;
-                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - 50) { p.update(); } else { p.y = canvas.height - 50; p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); }); } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 - 60 - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { showDialogue("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?", dialogueTimings.scene5); } if (animationFrame > (dialogueTimings.scene5/16.67) + 370) { scene = 8; animationFrame = 0; } break;
+                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - 50) { p.update(); } else { p.y = canvas.height - 50; p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); });                 } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2 + 80; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 + 20 - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { showDialogue("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?", dialogueTimings.scene5); } if (animationFrame > (dialogueTimings.scene5/16.67) + 370) { scene = 8; animationFrame = 0; } break;
                 case 8: stickman.blush = true; stickman.rotation = Math.sin(animationFrame * 0.08) * 0.15; stickman.draw(); if (animationFrame === 30) { showDialogue("Ai ai… já entendi! O Raphael me disse que colocou todo o carinho dele ao me criar… então acho que esse coração… era um pedacinho dele!", dialogueTimings.scene8); } if (animationFrame > (dialogueTimings.scene8/16.67) + 60) { scene = 9; animationFrame = 0; } break;
                 case 9: stickman.rotation = 0; stickman.blush = false; stickman.draw(); if (animationFrame === 30) { showDialogue("Humm, você deve estar se perguntando o motivo do por que eu estar aqui, né?", dialogueTimings.scene9); } if (animationFrame > (dialogueTimings.scene9/16.67) + 60) { scene = 10; animationFrame = 0; } break;
                 case 10: stickman.rotation = 0; if (animationFrame > 60 && animationFrame < 180) { stickman.handOnHead = true; } else { stickman.handOnHead = false; } stickman.draw(); if (animationFrame === 30) { showDialogue("Bem... Na verdade eu fugi do código! Raphael deve estar me procurando nesse exato momento...", dialogueTimings.scene10); } if (animationFrame > (dialogueTimings.scene10/16.67) + 60) { scene = 11; animationFrame = 0; } break;

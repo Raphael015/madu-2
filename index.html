@@ -17,33 +17,32 @@
             overflow: hidden;
         }
 
+        /* MODIFICAÇÃO: Adicionada transição para o canvas */
         #canvas {
             border: 2px solid #ff6b00;
             box-shadow: 0 0 30px rgba(255, 107, 0, 0.5);
             transition: transform 1.5s ease-out, opacity 1.5s ease-out;
             transform: translateY(0);
             opacity: 1;
-            display: block;
-            max-width: 100%;
-            max-height: 100%;
         }
 
+        /* NOVA CLASSE: Para esconder o canvas */
         #canvas.hide {
-            transform: translateY(-120%);
+            transform: translateY(-120%); /* Move para cima, para fora da tela */
             opacity: 0;
         }
 
+
         #dialogue {
             position: absolute;
-            top: 70px;
+            top: 50px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.8);
             color: #fff;
             padding: 20px 30px;
             border-radius: 15px;
-            font-size: 22px;
-            width: 80%;
+            font-size: 20px;
             max-width: 600px;
             text-align: center;
             border: 2px solid #ff6b00;
@@ -64,7 +63,7 @@
             opacity: 0;
             background: rgba(10, 10, 10, 0.9);
             color: #ffb700;
-            font-size: 19px;
+            font-size: 18px;
             text-align: left;
             text-shadow: 0 0 10px #ff6b00;
             transition: transform 1s ease-out, opacity 1s ease-out;
@@ -107,26 +106,6 @@
             background: #ff8533;
             transform: translateX(-50%) scale(1.1);
         }
-
-        /* Media queries para dispositivos móveis */
-        @media (max-width: 768px) {
-            #dialogue {
-                font-size: 18px;
-                padding: 15px 20px;
-                top: 80px;
-            }
-
-            #finalText {
-                font-size: 17px;
-                padding: 20px;
-            }
-
-            button {
-                padding: 12px 30px;
-                font-size: 16px;
-                bottom: 20px;
-            }
-        }
     </style>
 </head>
 <body>
@@ -135,30 +114,20 @@
     <div id="finalText"></div>
     <button id="startBtn">Começar 🎃</button>
 
+    <!-- ÁUDIO ADICIONADO AQUI -->
+    <audio id="halloween-music" src="https://res.cloudinary.com/dte38vdoe/video/upload/v1762141622/Andrew_Gold_-_Spooky_Scary_Skeletons_tradu%C3%A7%C3%A3o_PT_BR_v3dx54.mp3" loop></audio>
+
     <script>
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const dialogue = document.getElementById('dialogue');
         const startBtn = document.getElementById('startBtn');
         const finalText = document.getElementById('finalText');
+        // NOVA CONSTANTE PARA O ÁUDIO
+        const halloweenMusic = document.getElementById('halloween-music');
 
-        let scaleFactor = 1;
-
-        function resizeCanvas() {
-            const originalWidth = 800;
-            const originalHeight = 600;
-            
-            const scaleX = window.innerWidth / originalWidth;
-            const scaleY = window.innerHeight / originalHeight;
-            scaleFactor = Math.min(scaleX, scaleY) * 0.98;
-
-            canvas.width = originalWidth * scaleFactor;
-            canvas.height = originalHeight * scaleFactor;
-
-            canvas.style.position = 'absolute';
-            canvas.style.left = `${(window.innerWidth - canvas.width) / 2}px`;
-            canvas.style.top = `${(window.innerHeight - canvas.height) / 2}px`;
-        }
+        canvas.width = 800;
+        canvas.height = 600;
 
         let scene = 0;
         let animationFrame = 0;
@@ -169,16 +138,16 @@
         let portal = { x: 0, y: 0, radius: 0, opacity: 0 };
         let heartOpacity = 1;
 
+        // As classes (Stickman, Pumpkin, Spark) permanecem as mesmas.
         class Stickman {
             constructor() {
                 this.x = canvas.width / 2;
                 this.y = canvas.height / 2;
-                this.scale = 1 * scaleFactor;
-                /* ALTERADO: Aumentei drasticamente os valores base para o personagem ser bem maior */
-                this.headSize = 80 * scaleFactor;
-                this.bodyLength = 120 * scaleFactor;
-                this.armLength = 80 * scaleFactor;
-                this.legLength = 100 * scaleFactor;
+                this.scale = 1;
+                this.headSize = 40;
+                this.bodyLength = 60;
+                this.armLength = 40;
+                this.legLength = 50;
                 this.shake = 0;
                 this.rotation = 0;
                 this.glow = 0;
@@ -192,7 +161,7 @@
                 ctx.save();
                 ctx.globalAlpha = this.opacity;
 
-                const idleBob = Math.sin(animationFrame * 0.08) * 0.75 * scaleFactor; 
+                const idleBob = Math.sin(animationFrame * 0.08) * 0.75; 
                 const idleSway = Math.sin(animationFrame * 0.05) * 0.01;
 
                 ctx.translate(this.x + this.shake, this.y + idleBob);
@@ -201,7 +170,7 @@
                 ctx.scale(this.scale, this.scale);
 
                 ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 4 * scaleFactor;
+                ctx.lineWidth = 4;
                 ctx.lineCap = 'round';
 
                 ctx.beginPath();
@@ -209,22 +178,22 @@
                 ctx.lineTo(0, 0);
                 ctx.stroke();
 
-                const legWave = Math.sin(animationFrame * 0.04) * 3 * scaleFactor; 
+                const legWave = Math.sin(animationFrame * 0.04) * 3; 
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
-                ctx.lineTo(-20 * scaleFactor + legWave, this.legLength);
+                ctx.lineTo(-20 + legWave, this.legLength);
                 ctx.stroke();
                 ctx.beginPath();
                 ctx.moveTo(0, 0);
-                ctx.lineTo(20 * scaleFactor - legWave, this.legLength);
+                ctx.lineTo(20 - legWave, this.legLength);
                 ctx.stroke();
 
                 ctx.save();
-                const headBob = Math.sin(animationFrame * 0.07) * 1.5 * scaleFactor;
+                const headBob = Math.sin(animationFrame * 0.07) * 1.5;
                 ctx.translate(0, headBob);
 
                 if (this.glow > 0) {
-                    ctx.shadowBlur = (20 + this.glow) * scaleFactor;
+                    ctx.shadowBlur = 20 + this.glow;
                     ctx.shadowColor = '#ff6b00';
                 }
                 ctx.fillStyle = '#ff6b00';
@@ -232,67 +201,67 @@
                 ctx.ellipse(0, -this.bodyLength - this.headSize/2, this.headSize, this.headSize * 0.9, 0, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.strokeStyle = '#cc5500';
-                ctx.lineWidth = 2 * scaleFactor;
+                ctx.lineWidth = 2;
                 for (let i = -1; i <= 1; i++) {
                     ctx.beginPath();
-                    ctx.moveTo(i * 15 * scaleFactor, -this.bodyLength - this.headSize * 1.4);
-                    ctx.lineTo(i * 15 * scaleFactor, -this.bodyLength);
+                    ctx.moveTo(i * 15, -this.bodyLength - this.headSize * 1.4);
+                    ctx.lineTo(i * 15, -this.bodyLength);
                     ctx.stroke();
                 }
                 ctx.fillStyle = '#228b22';
-                ctx.fillRect(-5 * scaleFactor, -this.bodyLength - this.headSize * 1.5, 10 * scaleFactor, 15 * scaleFactor);
+                ctx.fillRect(-5, -this.bodyLength - this.headSize * 1.5, 10, 15);
                 ctx.fillStyle = '#000';
                 ctx.beginPath();
-                ctx.moveTo(-15 * scaleFactor, -this.bodyLength - this.headSize/2 - 5 * scaleFactor);
-                ctx.lineTo(-10 * scaleFactor, -this.bodyLength - this.headSize/2);
-                ctx.lineTo(-20 * scaleFactor, -this.bodyLength - this.headSize/2);
+                ctx.moveTo(-15, -this.bodyLength - this.headSize/2 - 5);
+                ctx.lineTo(-10, -this.bodyLength - this.headSize/2);
+                ctx.lineTo(-20, -this.bodyLength - this.headSize/2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.moveTo(15 * scaleFactor, -this.bodyLength - this.headSize/2 - 5 * scaleFactor);
-                ctx.lineTo(10 * scaleFactor, -this.bodyLength - this.headSize/2);
-                ctx.lineTo(20 * scaleFactor, -this.bodyLength - this.headSize/2);
+                ctx.moveTo(15, -this.bodyLength - this.headSize/2 - 5);
+                ctx.lineTo(10, -this.bodyLength - this.headSize/2);
+                ctx.lineTo(20, -this.bodyLength - this.headSize/2);
                 ctx.fill();
                 ctx.beginPath();
-                ctx.arc(0, -this.bodyLength - this.headSize/2 + 15 * scaleFactor, 15 * scaleFactor, 0.2, Math.PI - 0.2);
-                ctx.lineWidth = 3 * scaleFactor;
+                ctx.arc(0, -this.bodyLength - this.headSize/2 + 15, 15, 0.2, Math.PI - 0.2);
+                ctx.lineWidth = 3;
                 ctx.strokeStyle = '#000';
                 ctx.stroke();
                 for (let i = -10; i <= 10; i += 7) {
-                    ctx.fillRect(i * scaleFactor, -this.bodyLength - this.headSize/2 + 12 * scaleFactor, 5 * scaleFactor, 8 * scaleFactor);
+                    ctx.fillRect(i, -this.bodyLength - this.headSize/2 + 12, 5, 8);
                 }
                 if (this.blush) {
                     ctx.fillStyle = 'rgba(255, 100, 100, 0.5)';
                     ctx.beginPath();
-                    ctx.ellipse(-25 * scaleFactor, -this.bodyLength - this.headSize/2 + 5 * scaleFactor, 10 * scaleFactor, 8 * scaleFactor, 0, 0, Math.PI * 2);
+                    ctx.ellipse(-25, -this.bodyLength - this.headSize/2 + 5, 10, 8, 0, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.beginPath();
-                    ctx.ellipse(25 * scaleFactor, -this.bodyLength - this.headSize/2 + 5 * scaleFactor, 10 * scaleFactor, 8 * scaleFactor, 0, 0, Math.PI * 2);
+                    ctx.ellipse(25, -this.bodyLength - this.headSize/2 + 5, 10, 8, 0, 0, Math.PI * 2);
                     ctx.fill();
                 }
                 ctx.restore();
 
-                const armWave = Math.sin(animationFrame * 0.05) * 4 * scaleFactor; 
+                const armWave = Math.sin(animationFrame * 0.05) * 4; 
                 if (this.handOnHead) {
                     ctx.beginPath();
-                    ctx.moveTo(0, -this.bodyLength + 15 * scaleFactor);
-                    ctx.lineTo(-this.armLength + 10 * scaleFactor, -this.bodyLength - 30 * scaleFactor);
-                    ctx.lineTo(0, -this.bodyLength - 50 * scaleFactor);
+                    ctx.moveTo(0, -this.bodyLength + 15);
+                    ctx.lineTo(-this.armLength + 10, -this.bodyLength - 30);
+                    ctx.lineTo(0, -this.bodyLength - 50);
                     ctx.stroke();
                 } else if (this.waving) {
                      ctx.beginPath();
-                    ctx.moveTo(0, -this.bodyLength + 15 * scaleFactor);
-                    ctx.lineTo(-this.armLength, -this.bodyLength - 10 * scaleFactor + Math.sin(animationFrame * 0.2) * 10 * scaleFactor);
+                    ctx.moveTo(0, -this.bodyLength + 15);
+                    ctx.lineTo(-this.armLength, -this.bodyLength - 10 + Math.sin(animationFrame * 0.2) * 10);
                     ctx.stroke();
                 } else {
                     ctx.beginPath();
-                    ctx.moveTo(0, -this.bodyLength + 15 * scaleFactor);
-                    ctx.lineTo(-this.armLength, -this.bodyLength + 35 * scaleFactor + armWave);
+                    ctx.moveTo(0, -this.bodyLength + 15);
+                    ctx.lineTo(-this.armLength, -this.bodyLength + 35 + armWave);
                     ctx.stroke();
                 }
 
                 ctx.beginPath();
-                ctx.moveTo(0, -this.bodyLength + 15 * scaleFactor);
-                ctx.lineTo(this.armLength, -this.bodyLength + 35 * scaleFactor - armWave);
+                ctx.moveTo(0, -this.bodyLength + 15);
+                ctx.lineTo(this.armLength, -this.bodyLength + 35 - armWave);
                 ctx.stroke();
                 
                 ctx.restore();
@@ -302,11 +271,11 @@
         class Pumpkin {
            constructor(x, y) {
                 this.x = x; this.y = y;
-                this.vx = (Math.random() - 0.5) * 8 * scaleFactor; this.vy = (Math.random() - 0.5) * 8 * scaleFactor - 2 * scaleFactor;
-                this.size = (Math.random() * 15 + 10) * scaleFactor; this.rotation = Math.random() * Math.PI * 2;
+                this.vx = (Math.random() - 0.5) * 8; this.vy = (Math.random() - 0.5) * 8 - 2;
+                this.size = Math.random() * 15 + 10; this.rotation = Math.random() * Math.PI * 2;
                 this.rotationSpeed = (Math.random() - 0.5) * 0.2;
             }
-            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.2 * scaleFactor; this.rotation += this.rotationSpeed; }
+            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.2; this.rotation += this.rotationSpeed; }
             draw() {
                 ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
                 ctx.fillStyle = '#ff6b00'; ctx.beginPath();
@@ -322,11 +291,11 @@
             constructor(x, y) {
                 this.x = x; this.y = y;
                 const angle = Math.random() * Math.PI * 2;
-                const speed = (Math.random() * 5 + 2) * scaleFactor;
+                const speed = Math.random() * 5 + 2;
                 this.vx = Math.cos(angle) * speed; this.vy = Math.sin(angle) * speed;
-                this.size = (Math.random() * 3 + 1) * scaleFactor; this.opacity = 1;
+                this.size = Math.random() * 3 + 1; this.opacity = 1;
             }
-            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.1 * scaleFactor; this.opacity -= 0.02; }
+            update() { this.x += this.vx; this.y += this.vy; this.vy += 0.1; this.opacity -= 0.02; }
             draw() {
                 ctx.globalAlpha = this.opacity;
                 ctx.fillStyle = '#ffcc00';
@@ -335,8 +304,7 @@
             }
         }
 
-        let stickman;
-
+        const stickman = new Stickman();
         function showDialogue(text, duration) {
             dialogue.innerHTML = text;
             dialogue.classList.add('show');
@@ -345,27 +313,33 @@
             }, duration);
         }
 
-        /* ALTERADO: Posição da explosão ajustada para o novo tamanho do boneco */
-        function createExplosion() { for (let i = 0; i < 30; i++) { pumpkins.push(new Pumpkin(stickman.x, stickman.y - 100 * scaleFactor)); } }
-        
+        function createExplosion() { for (let i = 0; i < 30; i++) { pumpkins.push(new Pumpkin(stickman.x, stickman.y - 60)); } }
         function createHeart() {
             heartPumpkins = []; const heartPoints = [];
-            const heartScale = 12 * scaleFactor;
             for (let t = 0; t < Math.PI * 2; t += 0.1) {
                 const x = 16 * Math.pow(Math.sin(t), 3);
                 const y = -(13 * Math.cos(t) - 5 * Math.cos(2*t) - 2 * Math.cos(3*t) - Math.cos(4*t));
-                heartPoints.push({ x: canvas.width/2 + x * heartScale, y: canvas.height/2 + y * heartScale });
+                heartPoints.push({ x: canvas.width/2 + x * 12, y: canvas.height/2 + y * 12 });
             }
             for (let i = 0; i < heartPoints.length; i++) {
                 const p = new Pumpkin(heartPoints[i].x, heartPoints[i].y);
-                p.vx = 0; p.vy = 0; p.targetX = heartPoints[i].x; p.targetY = heartPoints[i].y; p.size = 12 * scaleFactor;
+                p.vx = 0; p.vy = 0; p.targetX = heartPoints[i].x; p.targetY = heartPoints[i].y; p.size = 12;
                 heartPumpkins.push(p);
             }
         }
         
         const dialogueTimings = {
-            scene1: 4000, scene2: 7000, scene3: 4000, scene4: 7000, scene5: 6000,
-            scene8: 7000, scene9: 5000, scene10: 6000, scene11: 10000, scene12: 5000, scene13: 6000,
+            scene1: 4000,
+            scene2: 7000,
+            scene3: 4000,
+            scene4: 7000,
+            scene5: 6000,
+            scene8: 7000,
+            scene9: 5000,
+            scene10: 6000,
+            scene11: 10000,
+            scene12: 5000,
+            scene13: 6000,
         };
 
         function animate() {
@@ -378,82 +352,152 @@
             animationFrame++;
 
             switch(scene) {
-                // As cenas permanecem as mesmas
-                case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3 * scaleFactor; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { showDialogue("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!", dialogueTimings.scene1); } if (animationFrame > (dialogueTimings.scene1/16.67) + 60) { scene = 2; animationFrame = 0; } break;
-                case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5 * scaleFactor; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
-                case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1 * scaleFactor; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
-                case 4: if (animationFrame < 90) { stickman.blush = true; stickman.shake = Math.sin(animationFrame * 0.5) * 5 * scaleFactor; } else if (animationFrame === 90) { createExplosion(); } else { stickman.opacity = 0; } stickman.draw(); pumpkins.forEach(p => { p.update(); p.draw(); }); if (animationFrame === 30) { showDialogue("O quê? Você tá rindo? Você tá rindo de mim? Ah não… tô com vergonha!! Grrr… por quê o Raphael me criou assim?", dialogueTimings.scene4); } if (animationFrame > (dialogueTimings.scene4/16.67) + 60) { scene = 5; animationFrame = 0; } break;
-                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - (50 * scaleFactor)) { p.update(); } else { p.y = canvas.height - (50 * scaleFactor); p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200 * scaleFactor; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200 * scaleFactor; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); }); } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 - 60 * scaleFactor - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { showDialogue("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?", dialogueTimings.scene5); } if (animationFrame > (dialogueTimings.scene5/16.67) + 370) { scene = 8; animationFrame = 0; } break;
+                // As cenas de 1 a 13 permanecem as mesmas
+                case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { showDialogue("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!", dialogueTimings.scene1); } if (animationFrame > (dialogueTimings.scene1/16.67) + 60) { scene = 2; animationFrame = 0; } break;
+                case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
+                case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
+                case 4: if (animationFrame < 90) { stickman.blush = true; stickman.shake = Math.sin(animationFrame * 0.5) * 5; } else if (animationFrame === 90) { createExplosion(); } else { stickman.opacity = 0; } stickman.draw(); pumpkins.forEach(p => { p.update(); p.draw(); }); if (animationFrame === 30) { showDialogue("O quê? Você tá rindo? Você tá rindo de mim? Ah não… tô com vergonha!! Grrr… por quê o Raphael me criou assim?", dialogueTimings.scene4); } if (animationFrame > (dialogueTimings.scene4/16.67) + 60) { scene = 5; animationFrame = 0; } break;
+                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - 50) { p.update(); } else { p.y = canvas.height - 50; p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); }); } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 - 60 - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { showDialogue("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?", dialogueTimings.scene5); } if (animationFrame > (dialogueTimings.scene5/16.67) + 370) { scene = 8; animationFrame = 0; } break;
                 case 8: stickman.blush = true; stickman.rotation = Math.sin(animationFrame * 0.08) * 0.15; stickman.draw(); if (animationFrame === 30) { showDialogue("Ai ai… já entendi! O Raphael me disse que colocou todo o carinho dele ao me criar… então acho que esse coração… era um pedacinho dele!", dialogueTimings.scene8); } if (animationFrame > (dialogueTimings.scene8/16.67) + 60) { scene = 9; animationFrame = 0; } break;
                 case 9: stickman.rotation = 0; stickman.blush = false; stickman.draw(); if (animationFrame === 30) { showDialogue("Humm, você deve estar se perguntando o motivo do por que eu estar aqui, né?", dialogueTimings.scene9); } if (animationFrame > (dialogueTimings.scene9/16.67) + 60) { scene = 10; animationFrame = 0; } break;
                 case 10: stickman.rotation = 0; if (animationFrame > 60 && animationFrame < 180) { stickman.handOnHead = true; } else { stickman.handOnHead = false; } stickman.draw(); if (animationFrame === 30) { showDialogue("Bem... Na verdade eu fugi do código! Raphael deve estar me procurando nesse exato momento...", dialogueTimings.scene10); } if (animationFrame > (dialogueTimings.scene10/16.67) + 60) { scene = 11; animationFrame = 0; } break;
                 case 11: stickman.blush = true; stickman.draw(); if (animationFrame === 30) { showDialogue("Eu fugi porque... Bem, eu vi que o Raphael está apaixonado por você, mas parece que ele não sabe muito bem dizer isso para você, né? Então eu fugi só para te contar isso! Mas é um segredo nosso, ok? Não deixe ele saber que você me viu!", dialogueTimings.scene11); } if (animationFrame > (dialogueTimings.scene11/16.67) + 60) { scene = 12; animationFrame = 0; } break;
-                case 12: screenShake.x = (Math.random() - 0.5) * 10 * scaleFactor; screenShake.y = (Math.random() - 0.5) * 10 * scaleFactor; stickman.shake = (Math.random() - 0.5) * 10 * scaleFactor; stickman.draw(); if (animationFrame === 30) { showDialogue("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!", dialogueTimings.scene12); } if (animationFrame > (dialogueTimings.scene12/16.67) + 60) { screenShake.x = 0; screenShake.y = 0; scene = 13; animationFrame = 0; } break;
+                case 12: screenShake.x = (Math.random() - 0.5) * 10; screenShake.y = (Math.random() - 0.5) * 10; stickman.shake = (Math.random() - 0.5) * 10; stickman.draw(); if (animationFrame === 30) { showDialogue("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!", dialogueTimings.scene12); } if (animationFrame > (dialogueTimings.scene12/16.67) + 60) { screenShake.x = 0; screenShake.y = 0; scene = 13; animationFrame = 0; } break;
                 case 13:
-                    if (animationFrame === 1) { showDialogue("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!", dialogueTimings.scene13); createHeart(); heartPumpkins.forEach(p => { p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height; }); pumpkins = heartPumpkins; }
-                    if (animationFrame > 1) { pumpkins.forEach(p => { if (animationFrame < 120) { p.x += (p.targetX - p.x) * 0.1; p.y += (p.targetY - p.y) * 0.1; } p.rotation += 0.05; p.draw(); }); sparks.forEach((s, index) => { s.update(); s.draw(); if (s.opacity <= 0) sparks.splice(index, 1); }); }
-                    if (animationFrame > 150 && animationFrame < 400) { portal.x = canvas.width / 2; portal.y = canvas.height / 2; if (portal.radius < 80 * scaleFactor) portal.radius += 2 * scaleFactor; if (portal.opacity < 1) portal.opacity += 0.05; ctx.globalAlpha = portal.opacity; ctx.beginPath(); ctx.arc(portal.x, portal.y, portal.radius, 0, Math.PI * 2); ctx.fillStyle = '#0a0a0a'; ctx.shadowColor = '#ff6b00'; ctx.shadowBlur = 50 * scaleFactor; ctx.fill(); ctx.shadowBlur = 0; ctx.globalAlpha = 1; }
-                    if (animationFrame > 200 && stickman.opacity > 0) { stickman.waving = true; const dx = portal.x - stickman.x; const dy = portal.y - stickman.y; stickman.x += dx * 0.05; stickman.y += dy * 0.05; stickman.scale *= 0.98; stickman.opacity *= 0.98; }
-                    if (Math.floor(stickman.opacity * 100) == 1 && sparks.length === 0) { for (let i = 0; i < 50; i++) { sparks.push(new Spark(portal.x, portal.y)); } }
+                    if (animationFrame === 1) {
+                        showDialogue("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!", dialogueTimings.scene13);
+                        createHeart();
+                        heartPumpkins.forEach(p => {
+                            p.x = Math.random() * canvas.width;
+                            p.y = Math.random() * canvas.height;
+                        });
+                        pumpkins = heartPumpkins;
+                    }
+
+                    if (animationFrame > 1) {
+                        pumpkins.forEach(p => {
+                            if (animationFrame < 120) {
+                                p.x += (p.targetX - p.x) * 0.1;
+                                p.y += (p.targetY - p.y) * 0.1;
+                            }
+                            p.rotation += 0.05;
+                            p.draw();
+                        });
+
+                        sparks.forEach((s, index) => {
+                            s.update();
+                            s.draw();
+                            if (s.opacity <= 0) sparks.splice(index, 1);
+                        });
+                    }
+
+                    if (animationFrame > 150 && animationFrame < 400) {
+                        portal.x = canvas.width / 2;
+                        portal.y = canvas.height / 2;
+                        if (portal.radius < 80) portal.radius += 2;
+                        if (portal.opacity < 1) portal.opacity += 0.05;
+
+                        ctx.globalAlpha = portal.opacity;
+                        ctx.beginPath();
+                        ctx.arc(portal.x, portal.y, portal.radius, 0, Math.PI * 2);
+                        ctx.fillStyle = '#0a0a0a';
+                        ctx.shadowColor = '#ff6b00';
+                        ctx.shadowBlur = 50;
+                        ctx.fill();
+                        ctx.shadowBlur = 0;
+                        ctx.globalAlpha = 1;
+                    }
+
+                    if (animationFrame > 200 && stickman.opacity > 0) {
+                        stickman.waving = true;
+                        const dx = portal.x - stickman.x;
+                        const dy = portal.y - stickman.y;
+                        stickman.x += dx * 0.05;
+                        stickman.y += dy * 0.05;
+                        stickman.scale *= 0.98;
+                        stickman.opacity *= 0.98;
+                    }
+
+                    if (Math.floor(stickman.opacity * 100) == 1 && sparks.length === 0) {
+                         for (let i = 0; i < 50; i++) {
+                            sparks.push(new Spark(portal.x, portal.y));
+                        }
+                    }
+                    
                     if (stickman.opacity > 0) stickman.draw();
-                    if (animationFrame > 450) { scene = 14; animationFrame = 0; }
+
+                    if (animationFrame > 450) {
+                        scene = 14;
+                        animationFrame = 0;
+                    }
                     break;
+
                 case 14:
                     if (animationFrame === 1) {
                         canvas.classList.add('hide');
-                        finalText.innerHTML = `<p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p> <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p> <p>Mas enfim, enquanto eu criava tudo isso, pensei sobre tudo o que já tivemos e, nossa, como eu queria muito te <strong>pedir em namoro</strong>, tipo AGORA, mas eu quero fazer algo <strong>especial</strong> para ti, entende? Você merece isso. Eu sei que pode ser um pouco frustrante, mas te peço um pouquinho de paciência sobre isso, tá? Até porque, eu te prometo, Madu, eu vou te pedir em namoro em breve.</p> <p>Sabe como eu tenho tanta certeza disso? É porque eu te considero <strong>muito especial</strong>, meu amor. Eu sei, eu sei que às vezes tudo pode ser um pouco difícil, cansativo e chato, sabe? Mas eu quero que você saiba que, independentemente do momento, eu vou estar sempre aqui com você, ao seu lado, tentando te ajudar de alguma forma, pois você é <strong>incrível</strong> para mim, sabia?</p> <p>Você é a mulher mais <strong>bela, incrível, leal, elegante, inteligente, criativa, engraçada, memorável, paciente, confiável, educada, responsável, talentosa, dedicada, esforçada, encantadora, brilhante e admirável em todos os sentidos</strong>. E por conta de todos esses detalhes, eu gosto <strong>MUITOOOOOOOO</strong> de você, de verdade.</p> <p>Para mim, você é a <strong>pessoa certa</strong>, e eu nunca tive tanta certeza disso. Você é a única e sempre será a única que fará meus olhos brilharem. Tenho certeza absoluta: é você, é você que é a <strong>mulher certa</strong> para mim, meu amor.</p>`;
+
+                        finalText.innerHTML = `
+                        <p style="text-align: center;"><strong>🎃 Feliz Halloween, Amor! ❤️</strong></p>
+                        <p>Oiiii, mor!!! Então, fiz tudo isso porque você já mencionou que gosta de Halloween, e eu queria fazer algo legal para ti, mas acabei me atrasando!!!</p>
+                        <p>Mas enfim, enquanto eu criava tudo isso, pensei sobre tudo o que já tivemos e, nossa, como eu queria muito te <strong>pedir em namoro</strong>, tipo AGORA, mas eu quero fazer algo <strong>especial</strong> para ti, entende? Você merece isso. Eu sei que pode ser um pouco frustrante, mas te peço um pouquinho de paciência sobre isso, tá? Até porque, eu te prometo, Madu, eu vou te pedir em namoro em breve.</p>
+                        <p>Sabe como eu tenho tanta certeza disso? É porque eu te considero <strong>muito especial</strong>, meu amor. Eu sei, eu sei que às vezes tudo pode ser um pouco difícil, cansativo e chato, sabe? Mas eu quero que você saiba que, independentemente do momento, eu vou estar sempre aqui com você, ao seu lado, tentando te ajudar de alguma forma, pois você é <strong>incrível</strong> para mim, sabia?</p>
+                        <p>Você é a mulher mais <strong>bela, incrível, leal, elegante, inteligente, criativa, engraçada, memorável, paciente, confiável, educada, responsável, talentosa, dedicada, esforçada, encantadora, brilhante e admirável em todos os sentidos</strong>. E por conta de todos esses detalhes, eu gosto <strong>MUITOOOOOOOO</strong> de você, de verdade.</p>
+                        <p>Para mim, você é a <strong>pessoa certa</strong>, e eu nunca tive tanta certeza disso. Você é a única e sempre será a única que fará meus olhos brilharem. Tenho certeza absoluta: é você, é você que é a <strong>mulher certa</strong> para mim, meu amor.</p>
+                        `;
                         finalText.classList.add('show');
-                        startBtn.innerText = 'Ver novamente 🔁';
+                        
+                        startBtn.innerText = 'Reiniciar';
                         startBtn.style.display = 'block';
                     }
-                    if (heartOpacity > 0) { heartOpacity -= 0.015; } else { heartOpacity = 0; }
+
+                    if (heartOpacity > 0) {
+                        heartOpacity -= 0.015;
+                    } else {
+                        heartOpacity = 0;
+                    }
+                    
                     ctx.globalAlpha = heartOpacity;
                     pumpkins.forEach(p => { p.draw(); });
                     ctx.globalAlpha = 1;
+
                     break;
             }
 
             ctx.restore();
-            if (scene !== 0) { requestAnimationFrame(animate); }
+            if (scene !== 0) {
+                 requestAnimationFrame(animate);
+            }
         }
 
-        function resetAndStart() {
-            startBtn.style.display = 'none';
-            canvas.classList.remove('hide');
-            resizeCanvas();
-
-            stickman = new Stickman();
-            scene = 1;
-            animationFrame = 0;
-            pumpkins = [];
-            heartPumpkins = [];
-            sparks = [];
-            screenShake = { x: 0, y: 0 };
-            portal = { x: 0, y: 0, radius: 0, opacity: 0 };
-            heartOpacity = 1;
-            finalText.classList.remove('show');
-            animate();
-        }
-
+        // --- CÓDIGO MODIFICADO ABAIXO ---
         startBtn.addEventListener('click', () => {
-            if (startBtn.innerText === 'Ver novamente 🔁') {
-                resetAndStart();
+            // Se o botão for para "Reiniciar", recarrega a página
+            if (startBtn.innerText === 'Reiniciar') {
+                location.reload();
             } else {
-                resetAndStart();
+                // Comportamento original para iniciar a animação
+                startBtn.style.display = 'none';
+                canvas.classList.remove('hide');
+
+                // TOCA A MÚSICA
+                halloweenMusic.play();
+
+                // Reseta o estado da animação
+                Object.assign(stickman, new Stickman());
+                scene = 1;
+                animationFrame = 0;
+                pumpkins = [];
+                heartPumpkins = [];
+                sparks = [];
+                screenShake = { x: 0, y: 0 };
+                portal = { x: 0, y: 0, radius: 0, opacity: 0 };
+                heartOpacity = 1;
+                finalText.classList.remove('show');
+                animate();
             }
         });
 
-        window.addEventListener('resize', () => {
-            if (scene === 0 || scene === 14) {
-                 resizeCanvas();
-                 ctx.fillStyle = '#0a0a0a';
-                 ctx.fillRect(0, 0, canvas.width, canvas.height);
-            } else {
-                resetAndStart();
-            }
-        });
-
-        resizeCanvas();
+        // Estado inicial
         ctx.fillStyle = '#0a0a0a';
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     </script>

@@ -40,7 +40,6 @@
 
         #dialogue {
             position: fixed;
-            /* ALTERAÇÃO: 'top' foi removido daqui e será controlado pelo JavaScript */
             left: 50%;
             transform: translateX(-50%);
             background: rgba(0, 0, 0, 0.9);
@@ -53,7 +52,7 @@
             text-align: center;
             border: 2px solid #ff6b00;
             opacity: 0;
-            transition: opacity 0.5s, top 0.3s ease-out; /* Adicionada transição para 'top' */
+            transition: opacity 0.5s, top 0.3s ease-out;
             z-index: 10;
             line-height: 1.5;
         }
@@ -91,7 +90,6 @@
 
         button {
             position: fixed;
-            /* ALTERAÇÃO: Botão BEM mais pra cima agora */
             bottom: 15%;
             left: 50%;
             transform: translateX(-50%);
@@ -122,7 +120,6 @@
                 font-size: 19px;
                 padding: 20px 22px;
                 max-width: 90%;
-                /* ALTERAÇÃO: 'top' removido daqui também */
             }
 
             #finalText {
@@ -135,7 +132,6 @@
             button {
                 padding: 10px 25px;
                 font-size: 14px;
-                /* ALTERAÇÃO: Posição do botão ajustada para telas menores */
                 bottom: 12%;
             }
 
@@ -162,6 +158,7 @@
     <div id="dialogue"></div>
     <div id="finalText"></div>
     <button id="startBtn">Começar 🎃</button>
+    <button id="nextBtn" style="display: none;">Próximo</button>
 
     <audio id="halloween-music" preload="auto">
         <source src="https://res.cloudinary.com/dte38vdoe/video/upload/v1762141622/Andrew_Gold_-_Spooky_Scary_Skeletons_tradu%C3%A7%C3%A3o_PT_BR_v3dx54.mp3" type="audio/mpeg">
@@ -173,8 +170,11 @@
         const ctx = canvas.getContext('2d');
         const dialogue = document.getElementById('dialogue');
         const startBtn = document.getElementById('startBtn');
+        const nextBtn = document.getElementById('nextBtn'); // Botão "Próximo"
         const finalText = document.getElementById('finalText');
         const audio = document.getElementById('halloween-music');
+
+        let isPausedForInput = false; // Variável para controlar a pausa
 
         function resizeCanvas() {
             const maxWidth = Math.min(800, window.innerWidth - 20);
@@ -364,32 +364,23 @@
 
         const stickman = new Stickman();
 
-        // ALTERAÇÃO: Função showDialogue foi reescrita para calcular a posição
-        function showDialogue(text, duration) {
+        // ALTERAÇÃO: Função agora mostra a mensagem, exibe o botão "Próximo" e pausa a animação.
+        function displayMessageAndPause(text) {
             dialogue.innerHTML = text;
             
-            // Força o navegador a calcular o tamanho do diálogo com o novo texto
             const dialogueHeight = dialogue.offsetHeight;
             const canvasRect = canvas.getBoundingClientRect();
             
-            // Calcula a nova posição: 20px acima do canvas
             let newTop = canvasRect.top - dialogueHeight - 20;
 
-            // Garante que o diálogo não saia da tela por cima
             if (newTop < 10) {
                 newTop = 10;
             }
 
-            // Define a nova posição
             dialogue.style.top = newTop + 'px';
-
-            // Mostra o diálogo
             dialogue.classList.add('show');
-            
-            // Esconde depois da duração definida
-            setTimeout(() => {
-                dialogue.classList.remove('show');
-            }, duration);
+            nextBtn.style.display = 'block'; // Mostra o botão "Próximo"
+            isPausedForInput = true; // Pausa a lógica da animação
         }
 
 
@@ -408,41 +399,32 @@
             }
         }
         
-        const dialogueTimings = {
-            scene1: 4000,
-            scene2: 7000,
-            scene3: 4000,
-            scene4: 7000,
-            scene5: 6000,
-            scene8: 7000,
-            scene9: 5000,
-            scene10: 6000,
-            scene11: 10000,
-            scene12: 5000,
-            scene13: 6000,
-        };
-
         function animate() {
             ctx.fillStyle = '#0a0a0a';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             ctx.save();
             ctx.translate(screenShake.x, screenShake.y);
-            animationFrame++;
+            
+            // ALTERAÇÃO: Só avança os frames da animação se não estiver pausado.
+            if (!isPausedForInput) {
+                animationFrame++;
+            }
 
+            // ALTERAÇÃO: A lógica de transição de cena foi removida daqui e movida para o botão "Próximo"
             switch(scene) {
-                case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { showDialogue("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!", dialogueTimings.scene1); } if (animationFrame > (dialogueTimings.scene1/16.67) + 60) { scene = 2; animationFrame = 0; } break;
-                case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { showDialogue("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!", dialogueTimings.scene2); } if (animationFrame > (dialogueTimings.scene2/16.67) + 60) { scene = 3; animationFrame = 0; } break;
-                case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { showDialogue("Ele fez até minha própria fantasia! 🎃", dialogueTimings.scene3); } if (animationFrame > (dialogueTimings.scene3/16.67) + 60) { scene = 4; animationFrame = 0; } break;
-                case 4: if (animationFrame < 90) { stickman.blush = true; stickman.shake = Math.sin(animationFrame * 0.5) * 5; } else if (animationFrame === 90) { createExplosion(); } else { stickman.opacity = 0; } stickman.draw(); pumpkins.forEach(p => { p.update(); p.draw(); }); if (animationFrame === 30) { showDialogue("O quê? Você tá rindo? Você tá rindo de mim? Ah não… tô com vergonha!! Grrr… por quê o Raphael me criou assim?", dialogueTimings.scene4); } if (animationFrame > (dialogueTimings.scene4/16.67) + 60) { scene = 5; animationFrame = 0; } break;
-                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - 50) { p.update(); } else { p.y = canvas.height - 50; p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); });                 } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2 + 80; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 + 20 - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { showDialogue("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?", dialogueTimings.scene5); } if (animationFrame > (dialogueTimings.scene5/16.67) + 370) { scene = 8; animationFrame = 0; } break;
-                case 8: stickman.blush = true; stickman.rotation = Math.sin(animationFrame * 0.08) * 0.15; stickman.draw(); if (animationFrame === 30) { showDialogue("Ai ai… já entendi! O Raphael me disse que colocou todo o carinho dele ao me criar… então acho que esse coração… era um pedacinho dele!", dialogueTimings.scene8); } if (animationFrame > (dialogueTimings.scene8/16.67) + 60) { scene = 9; animationFrame = 0; } break;
-                case 9: stickman.rotation = 0; stickman.blush = false; stickman.draw(); if (animationFrame === 30) { showDialogue("Humm, você deve estar se perguntando o motivo do por que eu estar aqui, né?", dialogueTimings.scene9); } if (animationFrame > (dialogueTimings.scene9/16.67) + 60) { scene = 10; animationFrame = 0; } break;
-                case 10: stickman.rotation = 0; if (animationFrame > 60 && animationFrame < 180) { stickman.handOnHead = true; } else { stickman.handOnHead = false; } stickman.draw(); if (animationFrame === 30) { showDialogue("Bem... Na verdade eu fugi do código! Raphael deve estar me procurando nesse exato momento...", dialogueTimings.scene10); } if (animationFrame > (dialogueTimings.scene10/16.67) + 60) { scene = 11; animationFrame = 0; } break;
-                case 11: stickman.blush = true; stickman.draw(); if (animationFrame === 30) { showDialogue("Eu fugi porque... Bem, eu vi que o Raphael está apaixonado por você, mas parece que ele não sabe muito bem dizer isso para você, né? Então eu fugi só para te contar isso! Mas é um segredo nosso, ok? Não deixe ele saber que você me viu!", dialogueTimings.scene11); } if (animationFrame > (dialogueTimings.scene11/16.67) + 60) { scene = 12; animationFrame = 0; } break;
-                case 12: screenShake.x = (Math.random() - 0.5) * 10; screenShake.y = (Math.random() - 0.5) * 10; stickman.shake = (Math.random() - 0.5) * 10; stickman.draw(); if (animationFrame === 30) { showDialogue("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!", dialogueTimings.scene12); } if (animationFrame > (dialogueTimings.scene12/16.67) + 60) { screenShake.x = 0; screenShake.y = 0; scene = 13; animationFrame = 0; } break;
+                case 1: if (animationFrame < 60) { stickman.shake = Math.sin(animationFrame * 0.3) * 3; stickman.glow = Math.abs(Math.sin(animationFrame * 0.2)) * 20; stickman.opacity = animationFrame / 60; } stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Buh! 👻 ... opa! Calma, calma, não era pra assustar tanto!"); } break;
+                case 2: stickman.shake = Math.sin(animationFrame * 0.15) * 1.5; stickman.glow = 0; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("É que… seu namorado, disse que você gosta de Halloween… Aí ele me criou para que eu deixasse o seu dia um pouquinho mais divertido!"); } break;
+                case 3: stickman.rotation = Math.sin(animationFrame * 0.05) * 0.2; stickman.shake = Math.sin(animationFrame * 0.1) * 1; stickman.glow = Math.abs(Math.sin(animationFrame * 0.1)) * 30; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Ele fez até minha própria fantasia! 🎃"); } break;
+                case 4: if (animationFrame < 90) { stickman.blush = true; stickman.shake = Math.sin(animationFrame * 0.5) * 5; } else if (animationFrame === 90) { createExplosion(); } else { stickman.opacity = 0; } stickman.draw(); pumpkins.forEach(p => { p.update(); p.draw(); }); if (animationFrame === 30) { displayMessageAndPause("O quê? Você tá rindo? Você tá rindo de mim? Ah não… tô com vergonha!! Grrr… por quê o Raphael me criou assim?"); } break;
+                case 5: if (animationFrame < 120) { pumpkins.forEach(p => { if (p.y < canvas.height - 50) { p.update(); } else { p.y = canvas.height - 50; p.vx *= 0.8; p.vy = 0; p.x += p.vx; p.vx *= 0.95; } p.draw(); }); }  else if (animationFrame < 240) { if (animationFrame === 120) { createHeart(); heartPumpkins.forEach(p => { p.x = canvas.width / 2 + (Math.random() - 0.5) * 200; p.y = canvas.height / 2 + (Math.random() - 0.5) * 200; }); pumpkins = heartPumpkins; } pumpkins.forEach(p => { if (p.targetX) { p.x += (p.targetX - p.x) * 0.08; p.y += (p.targetY - p.y) * 0.08; } p.draw(); }); } else if (animationFrame < 300) { const pulse = 1 + Math.sin((animationFrame - 240) * 0.2) * 0.15; pumpkins.forEach(p => { ctx.save(); ctx.translate(canvas.width/2, canvas.height/2); ctx.scale(pulse, pulse); ctx.translate(-canvas.width/2, -canvas.height/2); p.draw(); ctx.restore(); });                 } else if (animationFrame < 360) { if (animationFrame === 300) { stickman.x = canvas.width / 2; stickman.y = canvas.height / 2 + 80; stickman.opacity = 0; stickman.blush = true; } const progress = (animationFrame - 300) / 60; pumpkins.forEach(p => { p.x += (canvas.width/2 - p.x) * 0.1; p.y += (canvas.height/2 + 20 - p.y) * 0.1; p.size *= 0.95; p.draw(); }); stickman.opacity = progress; stickman.draw(); } else { stickman.draw(); } if (animationFrame === 370) { displayMessageAndPause("…Ops! Acho que isso não estava programado para acontecer! Mas pera… que? Eu virei um coração e… renasci?"); } break;
+                case 8: stickman.blush = true; stickman.rotation = Math.sin(animationFrame * 0.08) * 0.15; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Ai ai… já entendi! O Raphael me disse que colocou todo o carinho dele ao me criar… então acho que esse coração… era um pedacinho dele!"); } break;
+                case 9: stickman.rotation = 0; stickman.blush = false; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Humm, você deve estar se perguntando o motivo do por que eu estar aqui, né?"); } break;
+                case 10: stickman.rotation = 0; if (animationFrame > 60 && animationFrame < 180) { stickman.handOnHead = true; } else { stickman.handOnHead = false; } stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Bem... Na verdade eu fugi do código! Raphael deve estar me procurando nesse exato momento..."); } break;
+                case 11: stickman.blush = true; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("Eu fugi porque... Bem, eu vi que o Raphael está apaixonado por você, mas parece que ele não sabe muito bem dizer isso para você, né? Então eu fugi só para te contar isso! Mas é um segredo nosso, ok? Não deixe ele saber que você me viu!"); } break;
+                case 12: screenShake.x = (Math.random() - 0.5) * 10; screenShake.y = (Math.random() - 0.5) * 10; stickman.shake = (Math.random() - 0.5) * 10; stickman.draw(); if (animationFrame === 30) { displayMessageAndPause("ahhhh, o que é isso? Acho que é o Raphael!! Ele está vindo!!"); } break;
                 case 13:
                     if (animationFrame === 1) {
-                        showDialogue("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!", dialogueTimings.scene13);
+                        displayMessageAndPause("GRRR, tenho que voltar pra dentro do código... mas vou deixar um pedacinho do Raphael para você!");
                         createHeart();
                         heartPumpkins.forEach(p => { p.x = Math.random() * canvas.width; p.y = Math.random() * canvas.height; });
                         pumpkins = heartPumpkins;
@@ -506,6 +488,23 @@
             ctx.restore();
             if (scene !== 0) { requestAnimationFrame(animate); }
         }
+        
+        // ALTERAÇÃO: Evento de clique para o botão "Próximo"
+        nextBtn.addEventListener('click', () => {
+            dialogue.classList.remove('show');
+            nextBtn.style.display = 'none';
+
+            const transitions = {
+                1: 2, 2: 3, 3: 4, 4: 5, 5: 8, 8: 9, 9: 10, 10: 11, 11: 12, 12: 13
+            };
+            
+            if (transitions[scene]) {
+                scene = transitions[scene];
+                animationFrame = 0;
+            }
+
+            isPausedForInput = false; // Despausa a animação para continuar
+        });
 
         startBtn.addEventListener('click', () => {
             if (startBtn.innerText === 'Ver novamente') {
@@ -524,6 +523,7 @@
                 portal = { x: 0, y: 0, radius: 0, opacity: 0 };
                 heartOpacity = 1;
                 finalText.classList.remove('show');
+                isPausedForInput = false;
                 animate();
             }
         });
@@ -533,4 +533,3 @@
     </script>
 </body>
 </html>
-
